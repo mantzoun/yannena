@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	prefix        = "socket"
+	mylogger      = logger.NewLogger("socket")
 	ErrNoMessages = errors.New("no messages in queue")
 	messages      = make(chan string, 100)
 )
@@ -37,9 +37,9 @@ func MessagePop() (string, error) {
 func handleClient(conn net.Conn, msgChan chan string) {
 	defer conn.Close()
 	scanner := bufio.NewScanner(conn)
-	logger.Debug(prefix, "Client connected. Waiting for messages...")
+	mylogger.Debug("Client connected. Waiting for messages...")
 	for scanner.Scan() {
 		msgChan <- scanner.Text()
 	}
-	logger.Debug(prefix, "Client disconnected.")
+	mylogger.Debug("Client disconnected.")
 }

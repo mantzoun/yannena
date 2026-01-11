@@ -3,20 +3,24 @@ package logger
 import (
 	"log"
 	"os"
-	"sync"
 )
 
-var (
-	myLog *log.Logger
-	once  sync.Once
-)
-
-func Init() {
-	once.Do(func() {
-		myLog = log.New(os.Stdout, "", log.LstdFlags)
-	})
+type Logger struct {
+	level  int
+	prefix string
+	log    *log.Logger
 }
 
-func Debug(prefix string, message string) {
-	myLog.Printf("%-10s %-8s %s\n", prefix, "DEBUG", message)
+func NewLogger(prefix string) *Logger {
+	var logger Logger
+
+	logger.log = log.New(os.Stdout, "", log.LstdFlags)
+	logger.prefix = prefix
+	logger.level = 0
+
+	return &logger
+}
+
+func (logger *Logger) Debug(message string) {
+	logger.log.Printf("%-8s %-8s %s\n", "DEBUG", logger.prefix, message)
 }
