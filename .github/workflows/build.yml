@@ -1,0 +1,25 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - '*'
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.25.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build engine
+        run: make engine
+
+      - name: Test
+        run: make test
