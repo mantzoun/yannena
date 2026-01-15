@@ -21,14 +21,15 @@ func main() {
 
 	myLogger.Debug("Application started")
 
-	socket.Start("127.0.0.1:34001")
+	server := socket.NewServer("127.0.0.1:34001")
+	server.Start()
 
 	var test = area.NewBaseArea(areaLogger, 0, "earth")
 
 	areaLogger.Debug(test.Name())
 
 	for {
-		message, messageError = socket.MessagePop()
+		message, messageError = server.MessagePop()
 
 		if messageError != nil {
 			time.Sleep(10 * time.Second)

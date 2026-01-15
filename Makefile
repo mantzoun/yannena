@@ -22,4 +22,4 @@ clean:
 	@rm -rf $(BINDIR)
 
 test:
-	@go test $(PROJECT_TESTS)
+	@go test -v $(PROJECT_TESTS)

@@ -21,6 +21,13 @@ func NewLogger(prefix string) *Logger {
 	return &logger
 }
 
+func (logger *Logger) mylog(message string, level string) {
+	logger.log.Printf("%-8s %-8s %s\n", level, logger.prefix, message)
+}
 func (logger *Logger) Debug(message string) {
-	logger.log.Printf("%-8s %-8s %s\n", "DEBUG", logger.prefix, message)
+	logger.mylog(message, "DEBUG")
+}
+
+func (logger *Logger) Error(message string) {
+	logger.mylog(message, "ERROR")
 }
