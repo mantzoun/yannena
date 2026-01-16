@@ -28,14 +28,23 @@ func main() {
 
 	areaLogger.Debug(test.Name())
 
-	for {
-		message, messageError = server.MessagePop()
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
 
-		if messageError != nil {
-			time.Sleep(10 * time.Second)
-		} else {
-			myLogger.Debug(message)
+	for {
+		for {
+			message, messageError = server.MessagePop()
+
+			if messageError != nil {
+				break
+			} else {
+				myLogger.Debug(message)
+			}
 		}
 
+		myLogger.Debug("Loop log")
+		server.MessageSend("tik")
+
+		<-ticker.C
 	}
 }

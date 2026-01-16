@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Game Dashboard</title>
+<style>
+body { font-family: monospace; background: #111; color: #eee; margin:0; padding:0; }
+.container { display: flex; height: 100vh; }
+.panel { flex: 1; padding: 1em; overflow-y: auto; }
+#updates { background: #222; border-right: 2px solid #444; }
+#responses { background: #333; }
+input { width: 70%; padding: .5em; font-size: 1rem; }
+button { padding: .5em; font-size: 1rem; margin-left: .5em; }
+#input-container { margin-top: 1em; }
+#token-container { margin-bottom: 1em; }
+#updates-log, #response-log {
+    white-space: pre-wrap; /* preserves line breaks and wraps long lines */
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="panel" id="updates">
+        <h3>Server Updates (all clients)</h3>
+        <div id="updates-log"></div>
+    </div>
+    <div class="panel" id="responses">
+        <div id="token-container">
+            <input id="user-token" type="text" placeholder="Enter 64-bit hex token" maxlength="16"/>
+            <button id="generate-token">Generate Token</button>
+        </div>
+        <div id="input-container">
+            <input id="cmd" type="text" placeholder="Enter command…" />
+            <button onclick="sendCmd()">Send</button>
+        </div>
+        <h3>Your Command Responses</h3>
+        <div id="response-log"></div>
+    </div>
+</div>
+
+<script>
+// --- Token management ---
+const tokenInput = document.getElementById("user-token");
+const genButton = document.getElementById("generate-token");
+
+// Load token from localStorage if exists
+let userToken = localStorage.getItem("userToken");
+if (userToken) {
+    tokenInput.value = userToken;
+    // genButton.style.display = "none";
+} else {
+    genButton.style.display = "inline-block";
+}
+
+// Generate random 64-bit hex token
+genButton.onclick = () => {
+    if (!confirm("Generate a new token? This will replace your existing one.")) {
+        return; // user cancelled
+    }
+
+    const rand64bit = crypto.getRandomValues(new Uint32Array(2));
+    userToken = rand64bit[0].toString(16).padStart(8,'0') + rand64bit[1].toString(16).padStart(8,'0');
+    tokenInput.value = userToken;
+    localStorage.setItem("userToken", userToken);
+    //genButton.style.display = "none";
+};
+
+// If user manually changes the token, save it
+tokenInput.onchange = () => {
+    userToken = tokenInput.value.trim();
+    if (/^[0-9a-fA-F]{16}$/.test(userToken)) {
+        localStorage.setItem("userToken", userToken);
+    } else {
+        alert("Token must be a 64-bit hex (16 characters)");
+        tokenInput.value = localStorage.getItem("userToken") || "";
+    }
+};
+
+// --- WebSocket for broadcast updates ---
+const updatesLog = document.getElementById("updates-log");
+const responseLog = document.getElementById("response-log");
+
+const ws = new WebSocket(`ws://localhost:8080/ws?token=${userToken}`);
+ws.onmessage = e => {
+    try {
+        const msg = JSON.parse(e.data);
+        if (msg.panel === "updates") {
+            updatesLog.textContent += msg.text + "\n";
+            updatesLog.scrollTop = updatesLog.scrollHeight;
+        } else if (msg.panel === "response") {
+            responseLog.textContent += msg.text + "\n";
+            responseLog.scrollTop = responseLog.scrollHeight;
+        }
+    } catch {
+        // fallback if not JSON
+        updatesLog.textContent += e.data + "\n";
+    }
+};
+
+document.getElementById("cmd").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();   // optional, prevents form submit / newline
+        sendCmd();
+    }
+});
+
+// --- Send command via POST ---
+async function sendCmd() {
+    const cmdInput = document.getElementById("cmd");
+    const id = document.getElementById("user-token");
+    const cmd = id.value.trim() + " " + cmdInput.value.trim();
+    if (!cmd) return;
+    cmdInput.value = "";
+
+    try {
+        const res = await fetch("/command", {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain",
+                "X-User-Token": userToken
+            },
+            body: cmd
+        });
+        const text = await res.text();
+        responseLog.textContent += text + "\n";
+        responseLog.scrollTop = responseLog.scrollHeight;
+    } catch (err) {
+        responseLog.textContent += "[Error] " + err + "\n";
+        responseLog.scrollTop = responseLog.scrollHeight;
+    }
+}
+</script>
+</body>
+</html>

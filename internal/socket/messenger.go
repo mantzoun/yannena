@@ -12,7 +12,9 @@ type Messenger struct {
 }
 
 func NewMessenger() Messenger {
-	return Messenger{}
+	return Messenger{
+		messages: make(chan string, 100),
+	}
 }
 
 func (m *Messenger) Connected() (bool, error) {
@@ -30,6 +32,14 @@ func (m *Messenger) Disconnect() {
 		m.conn.Close()
 		m.connected = false
 	}
+}
+
+func (m *Messenger) MessageWait() (string, error) {
+	msg, ok := <-m.messages
+	if !ok {
+		return "", ErrConnectionClosed
+	}
+	return msg, nil
 }
 
 func (m *Messenger) MessagePop() (string, error) {
@@ -50,7 +60,6 @@ func (m *Messenger) MessageSend(message string) (int, error) {
 
 func (m *Messenger) handleConnection() {
 	defer m.conn.Close()
-	m.messages = make(chan string, 100)
 	scanner := bufio.NewScanner(m.conn)
 	for scanner.Scan() {
 		message := scanner.Text()
@@ -59,7 +68,7 @@ func (m *Messenger) handleConnection() {
 			continue
 		}
 
-		mylogger.Debug("Received message: " + message)
+		myLogger.Debug("Received message: " + message)
 		m.messages <- message
 	}
 }

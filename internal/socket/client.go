@@ -27,25 +27,32 @@ func (c *Client) Connect() {
 
 func clientLoop(c *Client) {
 	var err error
+	var connectionDelay time.Duration = 100
+
+	myLogger.Debug("Start client loop")
 
 	for {
 		if c.stop {
 			c.Disconnect()
-			mylogger.Debug("Client exiting")
+			myLogger.Debug("Client exiting")
 			c.started = false
 			return
 		}
 
 		c.conn, err = net.DialTimeout("tcp", c.address, 10*time.Millisecond)
 		if err != nil {
-			mylogger.Debug("Could not connect to server")
-			time.Sleep(200 * time.Millisecond)
+			myLogger.Debug("Could not connect to server")
+			time.Sleep(connectionDelay * time.Millisecond)
+			if connectionDelay < 1000 {
+				connectionDelay += 100
+			}
 		} else {
-			mylogger.Debug("Connected to server")
+			connectionDelay = 100
+			myLogger.Debug("Connected to server")
 			c.connected = true
 			c.handleConnection()
 			c.connected = false
-			mylogger.Debug("Disconnected from server")
+			myLogger.Debug("Disconnected from server")
 		}
 	}
 }
@@ -55,6 +62,6 @@ func (c *Client) Started() bool {
 }
 
 func (c *Client) Stop() {
-	mylogger.Debug("Stopping client")
+	myLogger.Debug("Stopping client")
 	c.stop = true
 }

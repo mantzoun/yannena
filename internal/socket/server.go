@@ -31,8 +31,10 @@ func serverLoop(s *Server) {
 	var err error
 	s.ln, err = net.Listen("tcp", s.address)
 
+	myLogger.Debug("Start server loop")
+
 	if err != nil {
-		mylogger.Error(err.Error())
+		myLogger.Error(err.Error())
 		s.serverStarted = false
 		return
 	}
@@ -40,13 +42,13 @@ func serverLoop(s *Server) {
 	for {
 		s.conn, err = s.ln.Accept()
 		if err != nil {
-			mylogger.Debug("Server exiting")
+			myLogger.Debug("Server exiting")
 			s.serverStarted = false
 			return
 		}
-		mylogger.Debug("Client connected. Waiting for messages...")
+		myLogger.Debug("Client connected. Waiting for messages...")
 		s.handleConnection()
-		mylogger.Debug("Disconnected from client")
+		myLogger.Debug("Disconnected from client")
 	}
 }
 

@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	mylogger        = logger.NewLogger("socket")
-	ErrNoMessages   = errors.New("no messages in queue")
-	ErrNoConnection = errors.New("not connected")
+	myLogger            = logger.NewLogger("socket")
+	ErrNoMessages       = errors.New("no messages in queue")
+	ErrNoConnection     = errors.New("not connected")
+	ErrConnectionClosed = errors.New("connection closed")
 )

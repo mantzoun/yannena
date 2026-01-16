@@ -10,10 +10,10 @@ PROJECT_TESTS = ./internal/socket \
 all: engine webserver
 
 engine: | $(BINDIR)
-	go build -o $(BINDIR)/engine cmd/engine/main.go
+	go build -o $(BINDIR)/engine ./cmd/engine
 
 webserver: | $(BINDIR)
-	go build -o $(BINDIR)/webserver cmd/webserver/main.go
+	go build -o $(BINDIR)/webserver ./cmd/webserver
 
 $(BINDIR):
 	@mkdir -p $(BINDIR)
