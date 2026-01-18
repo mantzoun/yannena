@@ -3,17 +3,20 @@ package main
 import (
 	"time"
 
-	"github.com/mantzoun/yannena/internal/area"
+	"github.com/mantzoun/yannena/internal/config"
+	"github.com/mantzoun/yannena/internal/engine"
 	"github.com/mantzoun/yannena/internal/logger"
 	"github.com/mantzoun/yannena/internal/socket"
 )
 
 var (
 	myLogger   = logger.NewLogger("main")
-	areaLogger = logger.NewLogger("area")
+	configFile = "config.json"
+	engineFile = "engine.json"
 )
 
 func main() {
+	config, _ := config.ReadConfig(configFile)
 	var (
 		message      string
 		messageError error
@@ -21,15 +24,14 @@ func main() {
 
 	myLogger.Debug("Application started")
 
-	server := socket.NewServer("127.0.0.1:34001")
+	server := socket.NewServer(&config)
 	server.Start()
-
-	var test = area.NewBaseArea(areaLogger, 0, "earth")
-
-	areaLogger.Debug(test.Name())
 
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
+
+	engine := engine.NewEngine(&config)
+	engine.Init()
 
 	for {
 		for {
@@ -44,6 +46,8 @@ func main() {
 
 		myLogger.Debug("Loop log")
 		server.MessageSend("tik")
+
+		engine.TikAdvance()
 
 		<-ticker.C
 	}

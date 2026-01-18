@@ -3,6 +3,8 @@ package socket
 import (
 	"net"
 	"time"
+
+	"github.com/mantzoun/yannena/internal/config"
 )
 
 type Client struct {
@@ -12,10 +14,10 @@ type Client struct {
 	started bool
 }
 
-func NewClient(address string) *Client {
+func NewClient(config *config.Config) *Client {
 	return &Client{
 		Messenger: NewMessenger(),
-		address:   address,
+		address:   config.SocketAddress,
 	}
 }
 

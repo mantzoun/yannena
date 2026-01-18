@@ -1,0 +1,51 @@
+{
+  "Tik": 0,
+  "Universe": {
+    "Systems": {
+      "Alpha Centauri": {
+        "Id": 4,
+        "Name": "Alpha Centauri",
+        "MyLogger": {},
+        "Areas": {
+          "Home": {
+            "Id": 5,
+            "Name": "Home",
+            "MyLogger": {},
+            "SystemName": "",
+            "AreaType": 0,
+            "Population": 0,
+            "PopulationMax": 0,
+            "PopulationBaseGrowth": 0
+          }
+        }
+      },
+      "Sol": {
+        "Id": 1,
+        "Name": "Sol",
+        "MyLogger": {},
+        "Areas": {
+          "Earth": {
+            "Id": 2,
+            "Name": "Earth",
+            "MyLogger": {},
+            "SystemName": "",
+            "AreaType": 0,
+            "Population": 0,
+            "PopulationMax": 0,
+            "PopulationBaseGrowth": 0
+          },
+          "Mars": {
+            "Id": 3,
+            "Name": "Mars",
+            "MyLogger": {},
+            "SystemName": "",
+            "AreaType": 0,
+            "Population": 0,
+            "PopulationMax": 0,
+            "PopulationBaseGrowth": 0
+          }
+        }
+      }
+    }
+  }
+}

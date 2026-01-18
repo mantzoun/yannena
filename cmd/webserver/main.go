@@ -9,15 +9,18 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/mantzoun/yannena/internal/config"
 	"github.com/mantzoun/yannena/internal/logger"
 	"github.com/mantzoun/yannena/internal/socket"
 )
 
 var (
 	myLogger = logger.NewLogger("webui")
+	confFile = "config.json"
 )
 
 func main() {
+	config, _ := config.ReadConfig(confFile)
 	hub := newHub()
 	go hub.run()
 
@@ -29,7 +32,7 @@ func main() {
 		serveCommand(hub, w, r)
 	})
 
-	engineClient := socket.NewClient("127.0.0.1:34001")
+	engineClient := socket.NewClient(&config)
 	engineClient.Connect()
 	go getEngineMessages(engineClient)
 

@@ -2,6 +2,8 @@ package socket
 
 import (
 	"net"
+
+	"github.com/mantzoun/yannena/internal/config"
 )
 
 type Server struct {
@@ -11,10 +13,10 @@ type Server struct {
 	ln            net.Listener
 }
 
-func NewServer(address string) *Server {
+func NewServer(config *config.Config) *Server {
 	return &Server{
 		Messenger: NewMessenger(),
-		address:   address,
+		address:   config.SocketAddress,
 	}
 }
 

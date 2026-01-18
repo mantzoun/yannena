@@ -2,6 +2,8 @@ package socket
 
 import (
 	"testing"
+
+	"github.com/mantzoun/yannena/internal/config"
 )
 
 // Interface defined for the test, to accomodate the helper functions
@@ -13,12 +15,15 @@ type TestMessenger interface {
 var (
 	test_message   = "Hello"
 	test_message_2 = "Goodbye"
-	test_address   = "127.0.0.1:34001"
+	test_config    = config.Config{
+		SocketAddress: "127.0.0.1:34001",
+	}
 )
 
 func TestClientSendMessageServerDown(t *testing.T) {
 	var err error
-	client := NewClient(test_address)
+
+	client := NewClient(&test_config)
 
 	client.Connect()
 	_, err = client.MessageSend(test_message)
@@ -33,8 +38,8 @@ func TestClientSendMessageServerDown(t *testing.T) {
 }
 
 func TestClientSendMessageOK(t *testing.T) {
-	client := NewClient(test_address)
-	server := NewServer(test_address)
+	client := NewClient(&test_config)
+	server := NewServer(&test_config)
 
 	server.Start()
 	client.Connect()
@@ -55,8 +60,8 @@ func TestClientSendMessageOK(t *testing.T) {
 }
 
 func TestClientConnectDisconnect(t *testing.T) {
-	client := NewClient(test_address)
-	server := NewServer(test_address)
+	client := NewClient(&test_config)
+	server := NewServer(&test_config)
 
 	server.Start()
 	client.Connect()

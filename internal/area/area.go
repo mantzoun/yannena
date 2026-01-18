@@ -1,65 +1,54 @@
 package area
 
 import (
-	"github.com/mantzoun/yannena/internal/entity"
+	"math"
+
+	"github.com/mantzoun/yannena/internal/config"
 	"github.com/mantzoun/yannena/internal/logger"
 )
 
-type AreaType int
-
-const (
-	StateIdle      AreaType = iota // 0
-	StateConnected                 // 1
-	StateError                     // 2
-	StateRetrying                  // 3
-)
-
-type BaseArea struct {
-	*entity.BaseEntity
-	systemName string
-	areaType   AreaType
-	// pop_t population;
-	// pop_t populationMax;
-	// int   populationBaseGrowth; // points per thousand
+type Area struct {
+	Id                   int
+	Name                 string
+	MyLogger             *logger.Logger
+	SystemName           string
+	AreaType             AreaType
+	Population           int64
+	PopulationMax        int64 // penalty after reaching this
+	PopulationBaseGrowth int64 // points per thousand
 }
 
-func NewBaseArea(logger *logger.Logger, id int, name string) *BaseArea {
-	return &BaseArea{
-		BaseEntity: entity.NewBaseEntity(logger, id, name),
+func NewArea(name string, id int) *Area {
+	return &Area{
+		Name: name,
+		Id:   id,
 	}
 }
 
-func (area *BaseArea) SystemName() string {
-	return area.systemName
+func (a *Area) Init(config *config.Config) {
+	a.MyLogger = logger.NewLogger(a.Name)
 }
 
-func (area *BaseArea) SetSystemName(name string) {
-	if name != "" {
-		area.systemName = name
+func (area *Area) AdjustPopulation(delta int64) {
+	if area.Population+delta < 0 {
+		area.Population = 0
+		// TODO planet empty alert
+	} else if delta > math.MaxInt64-area.Population {
+		area.Population = math.MaxInt64
+		// TODO planet full alert
+	} else {
+		area.Population += delta
 	}
 }
 
-func (area *BaseArea) AreaType() AreaType {
-	return area.areaType
+func (a *Area) TikAdvance() {
+	a.MyLogger.Debug("System Tik " + a.Name)
 }
 
-func (area *BaseArea) SetAreaType(areaType AreaType) {
-	area.areaType = areaType
+// void rollForNewEffect(void);
+// void processActiveEffects(void);
+func (area *Area) populationUpdate() {
+	delta := (area.PopulationBaseGrowth * area.Population) / (365 * 1000)
+
+	area.AdjustPopulation(delta)
 }
-
-func (area *BaseArea) tikAdvance() {
-	area.MyLogger.Debug("ADVANCE")
-}
-
-//   void rollForNewEffect(void);
-//   void processActiveEffects(void);
-//   void populationUpdate(void);
-
-//   void init();
-
-//   void populationSet(pop_t pop);
-//   void populationMod(pop_t diff);
-//   pop_t populationGet(void);
-
-//   void populationBaseGrowthSet(int b);
-//   int populationBaseGrowthGet(void);
