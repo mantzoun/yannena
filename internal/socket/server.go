@@ -11,6 +11,7 @@ type Server struct {
 	serverStarted bool
 	address       string
 	ln            net.Listener
+	stop          bool
 }
 
 func NewServer(config *config.Config) *Server {
@@ -42,18 +43,37 @@ func serverLoop(s *Server) {
 	}
 
 	for {
+		if s.stop {
+			// for testing, stop the goroutine
+			s.ln.Close()
+			s.serverStarted = false
+			return
+		}
+
 		s.conn, err = s.ln.Accept()
 		if err != nil {
 			myLogger.Debug("Server exiting")
 			s.serverStarted = false
 			return
 		}
+
+		// We only accept one client, modify accordingly for more
+		s.ln.Close()
+
 		myLogger.Debug("Client connected. Waiting for messages...")
 		s.handleConnection()
 		myLogger.Debug("Disconnected from client")
+
+		// Start listening again
+		s.ln, err = net.Listen("tcp", s.address)
+		if err != nil {
+			myLogger.Error("Failed to restart listener: " + err.Error())
+			s.serverStarted = false
+			return
+		}
 	}
 }
 
 func (s *Server) Stop() {
-	s.ln.Close()
+	s.stop = true
 }

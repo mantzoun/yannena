@@ -22,4 +22,4 @@ clean:
 	@rm -rf $(BINDIR)
 
 test:
-	@go test -v $(PROJECT_TESTS)
+	@go test -v -timeout 10s $(PROJECT_TESTS)

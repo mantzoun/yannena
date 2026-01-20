@@ -50,6 +50,7 @@ func TestClientSendMessageOK(t *testing.T) {
 		client.Stop()
 		client.Disconnect()
 		waitForServerStopped(server)
+		waitForClientStopped(client)
 	})
 
 	waitForConnection(client)
