@@ -17,7 +17,7 @@ type Client struct {
 func NewClient(config *config.Config) *Client {
 	return &Client{
 		Messenger: NewMessenger(),
-		address:   config.SocketAddress,
+		address:   config.ClientConnectAddress,
 	}
 }
 

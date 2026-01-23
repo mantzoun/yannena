@@ -1,4 +1,5 @@
 {
-    "SocketAddress": "127.0.0.1:34001",
+    "ServerListenAddress": "127.0.0.1:34001",
+    "ClientConnectAddress": "127.0.0.1:34001",
     "SaveFile": "engine.json"
 }

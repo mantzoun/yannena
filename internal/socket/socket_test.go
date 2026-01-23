@@ -16,7 +16,8 @@ var (
 	test_message   = "Hello"
 	test_message_2 = "Goodbye"
 	test_config    = config.Config{
-		SocketAddress: "127.0.0.1:34001",
+		ServerListenAddress:  "127.0.0.1:34001",
+		ClientConnectAddress: "127.0.0.1:34001",
 	}
 )
 

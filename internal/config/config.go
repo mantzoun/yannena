@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	SocketAddress string
-	SaveFile      string
-	LogLevel      int
+	ServerListenAddress  string
+	ClientConnectAddress string
+	SaveFile             string
+	LogLevel             int
 }
 
 func ReadConfig(filename string) (Config, error) {

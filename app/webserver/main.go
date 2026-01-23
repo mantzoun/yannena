@@ -30,6 +30,9 @@ func main() {
 	http.HandleFunc("/command", func(w http.ResponseWriter, r *http.Request) {
 		serveCommand(hub, w, r)
 	})
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		serveHealth(hub, w, r)
+	})
 
 	engineClient = socket.NewClient(&config)
 	engineClient.Connect()
@@ -88,6 +91,15 @@ func serveWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "www/index.html")
+}
+
+func serveHealth(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	connected, _ := engineClient.Connected()
+	if connected {
+		w.Write([]byte("Health OK"))
+	} else {
+		http.Error(w, "Not connected to engime", http.StatusInternalServerError)
+	}
 }
 
 func serveCommand(hub *Hub, w http.ResponseWriter, r *http.Request) {

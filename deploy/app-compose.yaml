@@ -1,0 +1,19 @@
+services:
+  engine:
+    image: ${ENGINE_IMAGE}
+    container_name: engine
+    restart: always
+    ports:
+      - "34001:34001"
+    volumes:
+      - /tmp/deployment_home:/engine
+
+  webserver:
+    image: ${WEBSERVER_IMAGE}
+    container_name: webserver
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - /tmp/deployment_home:/webserver
+

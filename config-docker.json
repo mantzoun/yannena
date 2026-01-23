@@ -1,0 +1,5 @@
+{
+    "ServerListenAddress": ":34001",
+    "ClientConnectAddress": "engine:34001",
+    "SaveFile": "engine.json"
+}
