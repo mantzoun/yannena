@@ -28,6 +28,10 @@ func (logger *Logger) Debug(message string) {
 	logger.mylog(message, "DEBUG")
 }
 
+func (logger *Logger) Info(message string) {
+	logger.mylog(message, "INFO ")
+}
+
 func (logger *Logger) Error(message string) {
 	logger.mylog(message, "ERROR")
 }

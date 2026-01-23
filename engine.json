@@ -1,6 +1,6 @@
 {
-  "Tik": 0,
   "Universe": {
+    "MyLogger": {},
     "Systems": {
       "Alpha Centauri": {
         "Id": 4,
@@ -13,9 +13,10 @@
             "MyLogger": {},
             "SystemName": "",
             "AreaType": 0,
-            "Population": 0,
-            "PopulationMax": 0,
-            "PopulationBaseGrowth": 0
+            "Population": 100018,
+            "PopulationMax": 100000000,
+            "PopulationBaseGrowth": 1100,
+            "TechLevel": 5
           }
         }
       },
@@ -30,9 +31,10 @@
             "MyLogger": {},
             "SystemName": "",
             "AreaType": 0,
-            "Population": 0,
-            "PopulationMax": 0,
-            "PopulationBaseGrowth": 0
+            "Population": 10001150737,
+            "PopulationMax": 15000000000,
+            "PopulationBaseGrowth": 700,
+            "TechLevel": 10
           },
           "Mars": {
             "Id": 3,
@@ -40,12 +42,17 @@
             "MyLogger": {},
             "SystemName": "",
             "AreaType": 0,
-            "Population": 0,
-            "PopulationMax": 0,
-            "PopulationBaseGrowth": 0
+            "Population": 20003942,
+            "PopulationMax": 100000000,
+            "PopulationBaseGrowth": 1200,
+            "TechLevel": 8
           }
         }
       }
     }
-  }
+  },
+  "TimeMgr": {
+    "Turn": 11
+  },
+  "LastId": 0
 }

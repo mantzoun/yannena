@@ -30,8 +30,6 @@ func (u *Universe) Init(config *config.Config) {
 }
 
 func (u *Universe) TikAdvance() {
-	u.MyLogger.Debug("Universe Tik")
-
 	for _, system := range u.Systems {
 		system.TikAdvance()
 	}

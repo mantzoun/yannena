@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -15,8 +13,9 @@ import (
 )
 
 var (
-	myLogger = logger.NewLogger("webui")
-	confFile = "config.json"
+	myLogger     = logger.NewLogger("webui")
+	confFile     = "config.json"
+	engineClient *socket.Client
 )
 
 func main() {
@@ -32,7 +31,7 @@ func main() {
 		serveCommand(hub, w, r)
 	})
 
-	engineClient := socket.NewClient(&config)
+	engineClient = socket.NewClient(&config)
 	engineClient.Connect()
 	go getEngineMessages(engineClient)
 
@@ -87,32 +86,6 @@ func serveWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	go readPump(hub, client)
 }
 
-func readPump(hub *Hub, c *Client) {
-	defer func() {
-		hub.unregister <- c
-		c.conn.Close()
-	}()
-
-	for {
-		_, _, err := c.conn.ReadMessage()
-		if err != nil {
-			return
-		}
-		// you can ignore client WS input if you want
-	}
-}
-
-func writePump(c *Client) {
-	defer c.conn.Close()
-
-	for msg := range c.send {
-		err := c.conn.WriteMessage(websocket.TextMessage, msg)
-		if err != nil {
-			return
-		}
-	}
-}
-
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "www/index.html")
 }
@@ -127,19 +100,21 @@ func serveCommand(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(r.Body)
 	cmd := string(body)
 
+	myLogger.Debug(token + " message: " + cmd)
+	engineClient.MessageSend(cmd)
 	// Process command in Go code
-	response := fmt.Sprintf("OK: %s", cmd)
+	// response := fmt.Sprintf("OK: %s", cmd)
 
 	// Send private response
-	msg := map[string]string{
-		"panel": "response",
-		"text":  response,
-	}
-	data, _ := json.Marshal(msg)
+	//	msg := map[string]string{
+	//		"panel": "response",
+	//		"text":  "received OK",
+	//	}
+	//	data, _ := json.Marshal(msg)
 
-	hub.broadcast <- data
+	//	hub.broadcast <- data
 
-	w.Write([]byte(response))
+	w.Write([]byte("received OK"))
 }
 
 //broadcast

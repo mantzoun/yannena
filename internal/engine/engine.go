@@ -3,21 +3,20 @@ package engine
 import (
 	"encoding/json"
 	"os"
-	"strconv"
 
 	"github.com/mantzoun/yannena/internal/config"
 	"github.com/mantzoun/yannena/internal/logger"
+	"github.com/mantzoun/yannena/internal/timemanager"
 	"github.com/mantzoun/yannena/internal/universe"
 )
 
 type Engine struct {
 	myLogger *logger.Logger
 	saveFile string
-	Tik      uint64
 	Universe universe.Universe
 	config   *config.Config
-	//TimeManager timeManager;
-	//Utils
+	TimeMgr  timemanager.TimeManager
+	LastId   int
 }
 
 func NewEngine(config *config.Config) *Engine {
@@ -25,6 +24,7 @@ func NewEngine(config *config.Config) *Engine {
 		saveFile: config.SaveFile,
 		myLogger: logger.NewLogger("engine"),
 		config:   config,
+		LastId:   0,
 	}
 }
 
@@ -50,13 +50,13 @@ func (e *Engine) Init() {
 	// e.writeSaveFile()
 }
 
-//Universe universe = Universe(&logger, &timeManager, &utils, utils.idGet(), "Euclid");
-
-//void messageUI(std::string message);
+func (e *Engine) Save() {
+	e.writeSaveFile()
+}
 
 func (e *Engine) TikAdvance() {
-	e.Tik += 1
-	e.myLogger.Debug("Next turn, " + strconv.FormatUint(e.Tik, 10))
+	e.TimeMgr.TimeAdvance(1)
+	e.myLogger.Debug("Next turn, " + e.TimeMgr.TimeToString(0))
 
 	e.Universe.TikAdvance()
 }
@@ -75,4 +75,9 @@ func (e *Engine) writeSaveFile() error {
 		return err
 	}
 	return os.WriteFile(e.saveFile, data, 0644)
+}
+
+func (e *Engine) NewId() int {
+	e.LastId += 1
+	return e.LastId
 }

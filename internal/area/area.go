@@ -1,6 +1,7 @@
 package area
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/mantzoun/yannena/internal/config"
@@ -15,7 +16,8 @@ type Area struct {
 	AreaType             AreaType
 	Population           int64
 	PopulationMax        int64 // penalty after reaching this
-	PopulationBaseGrowth int64 // points per thousand
+	PopulationBaseGrowth int64 // points per one hundred thousand
+	TechLevel            int
 }
 
 func NewArea(name string, id int) *Area {
@@ -43,12 +45,19 @@ func (area *Area) AdjustPopulation(delta int64) {
 
 func (a *Area) TikAdvance() {
 	a.MyLogger.Debug("System Tik " + a.Name)
+	a.populationUpdate()
 }
 
 // void rollForNewEffect(void);
 // void processActiveEffects(void);
 func (area *Area) populationUpdate() {
-	delta := (area.PopulationBaseGrowth * area.Population) / (365 * 1000)
+	var delta int64 = 0
+	capacity := 100 - (area.Population*100)/area.PopulationMax
+
+	if capacity > 0 {
+		delta = (area.PopulationBaseGrowth * area.Population) / (365 * 100000)
+		area.MyLogger.Debug(fmt.Sprintf("Pop delta %d", delta))
+	}
 
 	area.AdjustPopulation(delta)
 }

@@ -108,7 +108,7 @@ document.getElementById("cmd").addEventListener("keydown", function(e) {
 async function sendCmd() {
     const cmdInput = document.getElementById("cmd");
     const id = document.getElementById("user-token");
-    const cmd = id.value.trim() + " " + cmdInput.value.trim();
+    const cmd = cmdInput.value.trim();
     if (!cmd) return;
     cmdInput.value = "";
 
